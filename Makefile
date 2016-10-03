@@ -23,15 +23,22 @@ REZ_OPTS:=$(REZ_FILES:%=-z $(APP_ROOT)/resources/%)
 # build full path to source files
 SOURCES:=$(SRC_FILES:%=$(APP_ROOT)/source/%)
 
+# Binary to be produced
 TARGET:=$(APP_ROOT)/bin/$(APP_NAME).prg
 
+# Type of watch to test (only for simulator run)
+WATCH_TYPE:=fr230
+	
 
 $(TARGET): $(SOURCES)
 	monkeyc -w -o $@ $(KEY_OPT) $(MANIFEST) $(REZ_OPTS) $(SOURCES)
 
-all: $(TARGETS)
+all: $(TARGET)
+
+run: $(TARGET)
+	monkeydo $(TARGET) fr230
 
 info:
-		$(info APP_ROOT = $(APP_ROOT))
-		$(info SRC_FILES = $(SRC_FILES))
-		$(info SOURCES = $(SOURCES))
+	$(info APP_ROOT = $(APP_ROOT))
+	$(info SRC_FILES = $(SRC_FILES))
+	$(info SOURCES = $(SOURCES))
