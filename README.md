@@ -1,6 +1,11 @@
 ## Reminder
 
-`connectiq`
+Launch simulator:
+```
+connectiq
+```
 
 Launch program:
-`monkeydo bin/Sundial.prg fr230`
+```
+monkeydo bin/Sundial.prg fr230
+```
