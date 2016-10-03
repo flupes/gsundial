@@ -23,9 +23,16 @@ class SundialView extends Ui.WatchFace {
   }
 
   function computeSunEphemeris() {
-    sunNoonTime = new DayTime(13, 16, 0);
-    sunRiseTime = new DayTime(5, 48, 0);
-    sunSetTime = new DayTime(20, 32, 0);
+    // For now the value are just handcoded to start testing...
+    // short day:
+    sunNoonTime = new DayTime(12, 54, 0);
+    sunRiseTime = new DayTime(7, 17, 0);
+    sunSetTime = new DayTime(18, 30, 0);
+
+    // long day:
+    // sunNoonTime = new DayTime(13, 16, 0);
+    // sunRiseTime = new DayTime(5, 48, 0);
+    // sunSetTime = new DayTime(20, 32, 0);
   }
 
   function radiusFromAngle(a, width, height) {
@@ -58,15 +65,23 @@ class SundialView extends Ui.WatchFace {
     } else if (Sys.SCREEN_SHAPE_SEMI_ROUND == screenShape) {
       radius = radiusFromAngle(a, width, height);
     }
-    var sx = centerX + radius * Math.cos(a);
-    var sy = centerY - radius * Math.sin(a);
-    var ex = centerX + (radius - length) * Math.cos(a);
-    var ey = centerY - (radius - length) * Math.sin(a);
+    var cosa = Math.cos(a);
+    var sina = Math.sin(a);
+
+    var sx = centerX + radius * cosa;
+    var sy = centerY - radius * sina;
+    var ex = centerX + (radius - length) * cosa;
+    var ey = centerY - (radius - length) * sina;
     Sys.println(time.hour + ":" + time.minute + " --> a=" + Math.toDegrees(a) +
                 " radius=" + radius + " sx=" + sx + " sy=" + sy + " ex=" + ey +
                 " ey=" + ey);
     dc.setPenWidth(thickness);
     dc.drawLine(sx, sy, ex, ey);
+
+    radius = radius - 32;
+    var tx = centerX + radius * cosa;
+    var ty = centerY - radius * sina;
+    dc.drawText(tx, ty, Gfx.FONT_MEDIUM, time.hour, Gfx.TEXT_JUSTIFY_VCENTER);
   }
 
   function drawHours(dc) {
