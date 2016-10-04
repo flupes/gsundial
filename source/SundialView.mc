@@ -11,12 +11,13 @@ class SundialView extends Ui.WatchFace {
   var sunSetTime;
   var hourNumbers;
   var isAwake;
+  var nightTime;
 
   function initialize() {
     WatchFace.initialize();
     screenShape = Sys.getDeviceSettings().screenShape;
     computeSunEphemeris();
-    hourNumbers = [ 3, 6, 9, 12, 15, 18, 21 ];
+    hourNumbers = [ 3, 6, 9, 12, 15, 18, 21, 24 ];
   }
 
   // Load your resources here
@@ -110,10 +111,10 @@ class SundialView extends Ui.WatchFace {
       var y = (hor_line[i][0] * sina) + (hor_line[i][1] * cosa);
       shadow[i] = [ center_x + x, center_y - y ];
     }
-    if (time.lowerThan(sunRiseTime) or time.greaterThan(sunSetTime)) {
+    if (nightTime) {
       dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
     } else {
-      dc.setCOlor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
+      dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
     }
     dc.fillPolygon(shadow);
   }
@@ -125,14 +126,24 @@ class SundialView extends Ui.WatchFace {
     // Sys.println("SunRise : " + sunRiseTime.hour + ":" +
     // sunRiseTime.minutes);
     // Sys.println("SunSet : " + sunSetTime.hour + ":" + sunSetTime.minutes);
-    dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_WHITE);
     var margin = 24;
-    // drawMark(dc, sunRiseTime, margin, 1);
-    // drawMark(dc, sunSetTime, margin, 1);
     var t = new DayTime(sunRiseTime, 0, 0);
-    for (var h = sunRiseTime.hour + 1; h <= sunSetTime.hour; h++) {
-      t.hour = h;
-      drawMark(dc, t, margin, 1);
+    if (nightTime) {
+      dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
+      for (var h = sunSetTime.hour + 1; h <= sunRiseTime.hour + 24; h++) {
+        if (h > 24) {
+          t.hour = h - 24;
+        } else {
+          t.hour = h;
+        }
+        drawMark(dc, t, margin, 1);
+      }
+    } else {
+      dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_WHITE);
+      for (var h = sunRiseTime.hour + 1; h <= sunSetTime.hour; h++) {
+        t.hour = h;
+        drawMark(dc, t, margin, 1);
+      }
     }
   }
 
@@ -158,6 +169,21 @@ class SundialView extends Ui.WatchFace {
     dc.fillPolygon(points);
   }
 
+  function updateFace(dc, clock) {
+    if (clock.greaterThan(sunSetTime) or clock.lowerThan(sunRiseTime)) {
+      nightTime = true;
+    } else {
+      nightTime = false;
+    }
+    dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
+    dc.clear();
+    drawDayZone(dc);
+    drawHourLines(dc);
+    drawShadow(dc, clock);
+  }
+
+  ( : test) function runClock() {}
+
   // Called when this View is brought to the foreground. Restore
   // the state of this View and prepare it to be shown. This includes
   // loading resources into memory.
@@ -177,13 +203,7 @@ class SundialView extends Ui.WatchFace {
     // Call the parent onUpdate function to redraw the layout
     // View.onUpdate(dc);
 
-    // Clear the screen
-
-    dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
-    dc.clear();
-    drawDayZone(dc);
-    drawHourLines(dc);
-    drawShadow(dc, currentTime);
+    updateFace(dc, currentTime);
   }
 
   // Called when this View is removed from the screen. Save the
