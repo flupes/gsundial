@@ -180,6 +180,18 @@ class SundialView extends Ui.WatchFace {
     drawDayZone(dc);
     drawHourLines(dc);
     drawShadow(dc, clock);
+
+    var timeString =
+        Lang.format("$1$:$2$", [ clock.hour, clock.minutes.format("%02d") ]);
+    var pos_x = dc.getWidth() / 2;
+    var pos_y = nightTime ? dc.getHeight() / 4 : dc.getHeight() * 3 / 4;
+    if (nightTime) {
+      dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
+    } else {
+      dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+    }
+    dc.drawText(pos_x, pos_y, Gfx.FONT_NUMBER_MEDIUM, timeString,
+                Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
   }
 
   ( : test) function runClock() {}
@@ -194,11 +206,6 @@ class SundialView extends Ui.WatchFace {
     // Get and show the current time
     var clockTime = Sys.getClockTime();
     var currentTime = new DayTime(clockTime.hour, clockTime.min, 0);
-
-    var timeString = Lang.format(
-        "$1$:$2$", [ clockTime.hour, clockTime.min.format("%02d") ]);
-    // var view = View.findDrawableById("TimeLabel");
-    // view.setText(timeString);
 
     // Call the parent onUpdate function to redraw the layout
     // View.onUpdate(dc);
