@@ -28,7 +28,7 @@ TARGET:=$(APP_ROOT)/bin/$(APP_NAME).prg
 
 # Type of watch to test (only for simulator run)
 WATCH_TYPE:=fr230
-	
+
 
 $(TARGET): $(SOURCES)
 	monkeyc -w -o $@ $(KEY_OPT) $(MANIFEST) $(REZ_OPTS) $(SOURCES)
@@ -38,6 +38,8 @@ all: $(TARGET)
 run: $(TARGET)
 	monkeydo $(TARGET) fr230
 
+install: $(TARGET)
+	cp -a $(TARGET) /g/GARMIN/APPS/
 info:
 	$(info APP_ROOT = $(APP_ROOT))
 	$(info SRC_FILES = $(SRC_FILES))
