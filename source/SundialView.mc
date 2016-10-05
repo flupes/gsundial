@@ -2,6 +2,7 @@ using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 using Toybox.System as Sys;
 using Toybox.Lang as Lang;
+using Toybox.Time.Gregorian as Calendar;
 // using Toybox.Lang.Number as Num;
 
 class SundialView extends Ui.WatchFace {
@@ -76,8 +77,11 @@ class SundialView extends Ui.WatchFace {
     var sina = Math.sin(a);
     var sx = center_x + (radius - margin) * cosa;
     var sy = center_y - (radius - margin) * sina;
+    // 12 = hard coded (for now) distance from center
+    var ex = center_x + 12.0 * cosa;
+    var ey = center_y - 12.0 * sina;
     dc.setPenWidth(thickness);
-    dc.drawLine(sx, sy, center_x, center_y);
+    dc.drawLine(sx, sy, ex, ey);
 
     if (time.minutes == 0) {
       for (var i = 0; i < hourNumbers.size(); i++) {
@@ -100,11 +104,13 @@ class SundialView extends Ui.WatchFace {
     var center_y = height / 2;
 
     var current_a = time.toRad(sunNoonTime);
-    var radius = radiusFromAngle(dc, current_a) - 12.0;
+    // -18 define the length of the shadow: should be depending of the sun
+    // height...
+    var radius = radiusFromAngle(dc, current_a) - 18.0;
     var noon_a = time.toRad(sunNoonTime);
     var cosa = Math.cos(current_a);
     var sina = Math.sin(current_a);
-    var hor_line = [ [ 0, 2 ], [ radius, 2 ], [ radius, -2 ], [ 0, -2 ] ];
+    var hor_line = [ [ -1, 3 ], [ radius, 2 ], [ radius, -2 ], [ -1, -3 ] ];
     var shadow = new[4];
     for (var i = 0; i < 4; i++) {
       var x = (hor_line[i][0] * cosa) - (hor_line[i][1] * sina);
@@ -112,17 +118,25 @@ class SundialView extends Ui.WatchFace {
       shadow[i] = [ center_x + x, center_y - y ];
     }
     if (nightTime) {
+      // dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
       dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
     } else {
+      // dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_TRANSPARENT);
       dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
     }
     dc.fillPolygon(shadow);
+    var med_length =
+        (center_x < center_y) ? center_x * 2 / 3 : center_y * 2 / 3;
+    var style = [
+      [ center_x, center_y ],
+      [ center_x, (nightTime) ? height * 2 / 3 : height / 3 ],
+      [ center_x + med_length * cosa, center_y - med_length * sina ]
+    ];
+    dc.fillPolygon(style);
   }
 
   function drawHourLines(dc) {
     // noonAngle = timeToRad(sunNoonTime);
-    // Sys.println(width);
-    // Sys.println(height);
     // Sys.println("SunRise : " + sunRiseTime.hour + ":" +
     // sunRiseTime.minutes);
     // Sys.println("SunSet : " + sunSetTime.hour + ":" + sunSetTime.minutes);
@@ -181,7 +195,7 @@ class SundialView extends Ui.WatchFace {
     drawHourLines(dc);
     drawShadow(dc, clock);
 
-    var timeString =
+    var timeStr =
         Lang.format("$1$:$2$", [ clock.hour, clock.minutes.format("%02d") ]);
     var pos_x = dc.getWidth() / 2;
     var pos_y = nightTime ? dc.getHeight() / 4 : dc.getHeight() * 3 / 4;
@@ -190,8 +204,16 @@ class SundialView extends Ui.WatchFace {
     } else {
       dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
     }
-    dc.drawText(pos_x, pos_y, Gfx.FONT_NUMBER_MEDIUM, timeString,
+    dc.drawText(pos_x, pos_y, Gfx.FONT_NUMBER_HOT, timeStr,
                 Gfx.TEXT_JUSTIFY_CENTER | Gfx.TEXT_JUSTIFY_VCENTER);
+
+    var now = Time.now();
+    var info = Calendar.info(now, Time.FORMAT_LONG);
+    var dateStr =
+        Lang.format("$1$ $2$ $3$", [ info.day_of_week, info.month, info.day ]);
+    // 4 = offset from border / 19 = font size for TINY on FR230
+    pos_y = nightTime ? 4 : dc.getHeight() - 4 - 19;
+    dc.drawText(pos_x, pos_y, Gfx.FONT_SMALL, dateStr, Gfx.TEXT_JUSTIFY_CENTER);
   }
 
   ( : test) function runClock() {}
