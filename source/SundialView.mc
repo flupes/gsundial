@@ -10,6 +10,8 @@ class SundialView extends Ui.WatchFace {
   var sunNoonTime;
   var sunRiseTime;
   var sunSetTime;
+  var twilightStart;
+  var twilightEnd;
   var hourNumbers;
   var isAwake;
   var nightTime;
@@ -29,10 +31,16 @@ class SundialView extends Ui.WatchFace {
 
   function computeSunEphemeris() {
     // For now the value are just handcoded to start testing...
+    sunNoonTime = new DayTime(12, 56, 0);
+    sunRiseTime = new DayTime(7, 10, 0);
+    sunSetTime = new DayTime(18, 40, 0);
+    twilightStart = new DayTime(6, 40, 0);
+    twilightEnd = new DayTime(19, 06, 0);
+
     // short day:
-    sunNoonTime = new DayTime(12, 54, 0);
-    sunRiseTime = new DayTime(7, 17, 0);
-    sunSetTime = new DayTime(18, 30, 0);
+    // sunNoonTime = new DayTime(11, 54, 0);
+    // sunRiseTime = new DayTime(6, 55, 0);
+    // sunSetTime = new DayTime(16, 54, 0);
 
     // long day:
     // sunNoonTime = new DayTime(13, 16, 0);
@@ -181,6 +189,47 @@ class SundialView extends Ui.WatchFace {
       [ center_x, center_y ]
     ];
     dc.fillPolygon(points);
+
+    // Print the sunrise and sunset times
+    var pos_s_x;
+    var pos_s_y;
+    var pos_e_x;
+    var pos_e_y;
+    if (nightTime) {
+      dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
+      if (a_start > Math.PI) {
+        pos_s_x = center_x + (r_start - 4) * Math.cos(a_start);
+        pos_s_y = center_y - (r_start * 2 / 3) * Math.sin(a_start) - 19;
+        pos_e_x = center_x + (r_end - 4) * Math.cos(a_end);
+        pos_e_y = center_y - (r_end * 2 / 3) * Math.sin(a_end) - 19;
+      } else {
+        pos_s_x = center_x + (r_start - 4) * Math.cos(a_start);
+        pos_s_y = center_y - (r_start - 4) * Math.sin(a_start) - 19;
+        pos_e_x = center_x + (r_end - 4) * Math.cos(a_end);
+        pos_e_y = center_y - (r_end - 4) * Math.sin(a_end) - 19;
+      }
+    } else {
+      dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+      if (a_start > Math.PI) {
+        pos_s_x = center_x + (r_start - 4) * Math.cos(a_start);
+        pos_s_y = center_y - (r_start - 4) * Math.sin(a_start) + 2;
+        pos_e_x = center_x + (r_start - 4) * Math.cos(a_start);
+        pos_e_y = center_y - (r_start - 4) * Math.sin(a_start) + 2;
+      } else {
+        pos_s_x = center_x + (r_start - 4) * Math.cos(a_start);
+        pos_s_y = center_y - (r_start * 2 / 3) * Math.sin(a_start) + 2;
+        pos_e_x = center_x + (r_start - 4) * Math.cos(a_start);
+        pos_e_y = center_y - (r_start * 2 / 3) * Math.sin(a_start) + 2;
+      }
+    }
+    var sunRiseStr = Lang.format(
+        "$1$:$2$", [ sunRiseTime.hour, sunRiseTime.minutes.format("%02d") ]);
+    dc.drawText(pos_s_x, pos_s_y, Gfx.FONT_SMALL, sunRiseStr,
+                Gfx.TEXT_JUSTIFY_LEFT);
+    var sunSetStr = Lang.format(
+        "$1$:$2$", [ sunSetTime.hour, sunSetTime.minutes.format("%02d") ]);
+    dc.drawText(pos_e_x, pos_e_y, Gfx.FONT_SMALL, sunSetStr,
+                Gfx.TEXT_JUSTIFY_RIGHT);
   }
 
   function updateFace(dc, clock) {
