@@ -31,11 +31,11 @@ class SundialView extends Ui.WatchFace {
 
   function computeSunEphemeris() {
     // For now the value are just handcoded to start testing...
-    sunNoonTime = new DayTime(12, 56, 0);
-    sunRiseTime = new DayTime(7, 10, 0);
-    sunSetTime = new DayTime(18, 40, 0);
-    twilightStart = new DayTime(6, 40, 0);
-    twilightEnd = new DayTime(19, 06, 0);
+    sunNoonTime = new DayTime(12, 53, 0);
+    sunRiseTime = new DayTime(7, 24, 0);
+    sunSetTime = new DayTime(18, 21, 0);
+    twilightStart = new DayTime(6, 57, 0);
+    twilightEnd = new DayTime(18, 48, 0);
 
     // short day:
     // sunNoonTime = new DayTime(11, 54, 0);
@@ -133,6 +133,7 @@ class SundialView extends Ui.WatchFace {
       dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
     }
     dc.fillPolygon(shadow);
+    /*
     var med_length =
         (center_x < center_y) ? center_x * 2 / 3 : center_y * 2 / 3;
     var style = [
@@ -141,6 +142,7 @@ class SundialView extends Ui.WatchFace {
       [ center_x + med_length * cosa, center_y - med_length * sina ]
     ];
     dc.fillPolygon(style);
+    */
   }
 
   function drawHourLines(dc) {
@@ -218,8 +220,8 @@ class SundialView extends Ui.WatchFace {
       } else {
         pos_s_x = center_x + (r_start - 4) * Math.cos(a_start);
         pos_s_y = center_y - (r_start * 2 / 3) * Math.sin(a_start) + 2;
-        pos_e_x = center_x + (r_start - 4) * Math.cos(a_start);
-        pos_e_y = center_y - (r_start * 2 / 3) * Math.sin(a_start) + 2;
+        pos_e_x = center_x + (r_end - 4) * Math.cos(a_end);
+        pos_e_y = center_y - (r_end * 2 / 3) * Math.sin(a_end) + 2;
       }
     }
     var sunRiseStr = Lang.format(
