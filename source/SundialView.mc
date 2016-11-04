@@ -267,8 +267,6 @@ class SundialView extends Ui.WatchFace {
     dc.drawText(pos_x, pos_y, Gfx.FONT_SMALL, dateStr, Gfx.TEXT_JUSTIFY_CENTER);
   }
 
-  ( : test) function runClock() {}
-
   // Called when this View is brought to the foreground. Restore
   // the state of this View and prepare it to be shown. This includes
   // loading resources into memory.
