@@ -17,12 +17,14 @@ module Astro {
     // Some random dates in the present, past and future
     var m1 = Calendar.moment({:year=>2016, :month=>11, :day=>04, :hour=>04, :minute=>41, :second=>00 });
     var m2 = Calendar.moment({:year=>1970, :month=>05, :day=>23, :hour=>10, :minute=>11, :second=>12 });
-    // var m3 = Calendar.moment({:year=>2054, :month=>09, :day=>06, :hour=>06,
-    // :minute=>00, :second=>00 });
+    var m3 = Calendar.moment({:year=>2034, :month=>9, :day=>7, :hour=>6, :minute=>0, :second=>0 });
+    // very interesting:
+    //   - month=>09 does not parse correctly by the compiler!
+    //   - year=>2044 generates an run-time error!
     var times = [
       [ m1, 1478234460, 2457696.695139 ],  // 2016-11-04_04:41:00 GMT
       [ m2, 12305472, 2440729.924444 ],    // 1970-05-23_10:11:12 GMT
-      [ m2, 267237360, 971448.750000 ]     // 2054-09-07_06:00:00 GMT
+      [ m3, 2041221600, 2464212.750000 ]   // 2054-09-07_06:00:00 GMT
     ];
     for (var i = 0; i < times.size(); i++) {
       var ue = times[i][0].value();
