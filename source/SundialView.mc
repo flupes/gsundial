@@ -31,11 +31,12 @@ class SundialView extends Ui.WatchFace {
 
   function computeSunEphemeris() {
     // For now the value are just handcoded to start testing...
-    sunNoonTime = new DayTime(12, 53, 0);
-    sunRiseTime = new DayTime(7, 24, 0);
-    sunSetTime = new DayTime(18, 21, 0);
-    twilightStart = new DayTime(6, 57, 0);
-    twilightEnd = new DayTime(18, 48, 0);
+    // Vail, December 28
+    sunNoonTime = new DayTime(12, 04, 0);
+    sunRiseTime = new DayTime(7, 23, 0);
+    sunSetTime = new DayTime(16, 45, 0);
+    twilightStart = new DayTime(6, 53, 0);
+    twilightEnd = new DayTime(17, 16, 0);
 
     // short day:
     // sunNoonTime = new DayTime(11, 54, 0);
